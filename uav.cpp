@@ -812,15 +812,7 @@ cv::Mat uav::segmentationHSVmultipleColors(cv::Mat img, cv::Mat pattern, QString
         finalMask = mask;
 
 
-    //cv::bitwise_not(finalMask, finalMask);
-    //cv::imshow("Mask Final (before)", finalMask);
-    //cv::imshow("Mask img (before morphology)", mask);
-
-    //cv::dilate(finalMask, finalMask, cv::Mat::ones(7, 7, CV_8UC1));
-    //cv::dilate(finalMask, finalMask, cv::Mat::ones(7, 7, CV_8UC1));
-    //cv::erode(finalMask, finalMask, cv::Mat::ones(7, 7, CV_8UC1));
-
-
+    // Show final mask
     cv::imshow("Mask Final (after)", finalMask);
     cv::Mat resultHSV = cv::Mat::zeros(img.rows, img.cols, CV_8UC3);
     cv::Mat originalImg = cv::imread((filepath + "/" + filename).toUtf8().data());
