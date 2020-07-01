@@ -115,6 +115,7 @@ void uav::on_upload2Images_clicked()
 {
     QStringList filename = QFileDialog::getOpenFileNames(this,tr("Open File"), tr("Images (*.png *.jpg *.jpeg *.bmp *.gif)"));
     //std::vector<QImage> differentImageRaw;
+    int x = 0;
     if (!filename.isEmpty()){
         if(filename.length() != 2)
             ui->uploadStatus->setText("Choose two images!");
@@ -140,15 +141,29 @@ void uav::on_findChanges_clicked()
         ui->uploadStatus->setText("Invalid input!");
 
     else{
-        cv::Mat im1 = cv::imread(this->differentImageRaw.at(0).toUtf8().data());
-        cv::Mat im2 = cv::imread(this->differentImageRaw.at(1).toUtf8().data());
+        cv::Mat im1p = cv::imread(this->differentImageRaw.at(0).toUtf8().data());
+        cv::Mat im2p = cv::imread(this->differentImageRaw.at(1).toUtf8().data());
         differentImageRaw.clear();
 
-        //cv::resize(img1, img1, cv::Size(), 0.75, 0.75);
-        //cv::resize(img2, img2, cv::Size(), 0.75, 0.75);
 
-        cv::GaussianBlur(im1, im1, cv::Size(3,3), 0.05);
-        cv::GaussianBlur(im2, im2, cv::Size(3,3), 0.05);
+        int h, w;
+
+        h = im1p.rows > im2p.rows ? im2p.rows : im1p.rows;
+        w = im1p.cols > im2p.cols ? im2p.cols : im1p.cols;
+
+        //im1p = preprocessImage(im1p);
+        //im2p = preprocessImage(im2p);
+
+        cv::Mat im1 = im1p(cv::Rect(0, 0, w, h));
+        cv::Mat im2 = im2p(cv::Rect(0, 0, w, h));
+
+
+        cv::GaussianBlur(im1, im1, cv::Size(3,3), 0, 0);
+        cv::GaussianBlur(im2, im2, cv::Size(3,3), 0, 0);
+
+        cv::GaussianBlur(im1, im1, cv::Size(3,3), 0, 0);
+        cv::GaussianBlur(im2, im2, cv::Size(3,3), 0, 0);
+
 
         //cv::Mat imgOrig1 = img1, imgOrig2 = img2;
         cv::Mat im1_gray, im2_gray;
@@ -269,18 +284,29 @@ void uav::on_findChanges_clicked()
             //Warp source image to destination based on homography
             cv::warpPerspective(im2_gray, img2Transformed, H, im1.size());
 
+
             cv::absdiff(im1_gray, img2Transformed, imOut2);
+            //cv::imshow("imOut2", imOut2);
             cv::Mat finalIm2 = cv::Mat::zeros(im2.rows, im2.cols, CV_8UC3);
 
             //cv::imshow("Result (pre)", imgOut2);
             cv::threshold(imOut2, imOut2, 35, 255, cv::THRESH_BINARY);
-            cv::erode(imOut2, imOut2, cv::Mat::ones(3, 3, CV_8UC1));
+            cv::dilate(imOut2, imOut2, cv::Mat::ones(3, 3, CV_8UC1));
+            cv::dilate(imOut2, imOut2, cv::Mat::ones(3, 3, CV_8UC1));
+            cv::dilate(imOut2, imOut2, cv::Mat::ones(3, 3, CV_8UC1));
 
-            cv::bitwise_and(im2, im2, finalIm2, imOut2);
-            cv::imshow("Image 1", im1);
-            cv::imshow("Image 2", im2);
+            cv::bitwise_and(im2, im2, finalIm2, imOut2);            
+            bool a = cv::imwrite( "/Users/mehmed/Desktop/finalImage.jpg", finalIm2 );
+
+            if(a) printf("Uspjesno");
+            else printf("Ne");
+
             cv::imshow("Result", finalIm2);
+
+            cv::waitKey(0);
+            cv::destroyAllWindows();
         }
+
     }
 }
 
