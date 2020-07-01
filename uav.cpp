@@ -113,6 +113,7 @@ void uav::on_runButton_clicked()
 
 void uav::on_upload2Images_clicked()
 {
+    int y = 1;
     QStringList filename = QFileDialog::getOpenFileNames(this,tr("Open File"), tr("Images (*.png *.jpg *.jpeg *.bmp *.gif)"));
     //std::vector<QImage> differentImageRaw;
     int x = 0;
