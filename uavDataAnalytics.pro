@@ -17,13 +17,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     helpdialog.cpp \
+    hsvseparator.cpp \
     imageprocessing2d.cpp \
     main.cpp \
+    pointcloudanalyzer.cpp \
     uav.cpp
 
 HEADERS += \
     helpdialog.h \
+    hsvseparator.h \
     imageprocessing2d.h \
+    pointcloudanalyzer.h \
     uav.h
 
 FORMS += \
@@ -50,3 +54,6 @@ LIBS += -lopencv_stitching
 LIBS += -lopencv_xfeatures2d
 LIBS += -lopencv_imgcodecs
 LIBS += -L/usr/local/lib/
+LIBS += -L/usr/local/Cellar/pcl/1.11.1_1/lib
+
+INCLUDEPATH += /usr/local/Cellar/pcl/1.11.1_1/include/pcl-1.11

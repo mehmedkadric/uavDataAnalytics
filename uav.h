@@ -84,6 +84,8 @@ private slots:
 
     void draw_locations(cv::Mat & img, const std::vector< cv::Rect > & locations, const cv::Scalar & color);
 
+    void on_hsvSeparator_clicked();
+
 private:
     Ui::uav *ui;
     QString filepath, filepathSegmentation, filepathTemplateMatching, vehicleImage;

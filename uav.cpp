@@ -1,8 +1,9 @@
 #include "uav.h"
 #include "ui_uav.h"
+#include "pointcloudanalyzer.h"
 #include <iostream>
 #include "opencv2/opencv.hpp"
-
+#include "hsvseparator.h"
 
 
 /*
@@ -392,7 +393,7 @@ void uav::calculateThresholdsHSV(cv::Mat src){
     cv::dilate(H, H, cv::Mat::ones(5, 5, CV_8UC1));
     cv::erode(H, H, cv::Mat::ones(5, 5, CV_8UC1));
     cv::erode(H, H, cv::Mat::ones(5, 5, CV_8UC1));
-    //cv::GaussianBlur(H, H, cv::Size(5,5), 0, 0);
+    cv::GaussianBlur(H, H, cv::Size(15,15), 10);
 
 
     int histSizeH = 180, histSize = 255;
@@ -844,6 +845,7 @@ cv::Mat uav::segmentationHSVmultipleColors(cv::Mat img, cv::Mat pattern, QString
 
         //Tune parameters!!!
         if (area > maxArea && extent > 0.2 && aspect_ratio > 0.5){
+        //if (cv::isContourConvex(contours[i])){
             //cv::drawContours( drawing, contours, i, color, cv::FILLED, 8, hierarchy, 0, cv::Point());
             cv::drawContours( drawing, contours, int(i), color, 4, 8, hierarchy, 0, cv::Point());
         }
@@ -1262,6 +1264,30 @@ void uav::draw_locations(cv::Mat & img, const std::vector< cv::Rect > & location
         for (; loc != end; ++loc)
         {
             cv::rectangle(img, *loc, color, 2);
+        }
+    }
+}
+
+
+
+void uav::on_hsvSeparator_clicked()
+{
+    QString filename = QFileDialog::getOpenFileName(this, tr("Choose"), "", tr("Images (*.png *.jpg *.jpeg *.bmp *.gif)"));
+
+    if(QString::compare(filename, QString()) != 0){
+        QImage image;
+        cv::Mat imgThreshed;
+        bool valid = image.load(filename);
+
+        if(valid){
+            cv::Mat imgRGB, imgHSV;
+            imgRGB = cv::imread(filename.toUtf8().data());
+            cv::cvtColor(imgRGB, imgHSV, cv::COLOR_BGR2HSV);
+            cv::inRange(imgHSV, cv::Scalar(40, 100, 0), cv::Scalar(45, 255, 255), imgThreshed);
+            cv::imshow("imgThreshed", imgThreshed);
+            cv::imshow("imgRGB", imgRGB);
+            cv::waitKey(0);
+            cv::destroyAllWindows();
         }
     }
 }
